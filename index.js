@@ -4,17 +4,55 @@ const form = document.getElementById("passwordGeneratorForm")
 const includeUpperCaseEl = document.getElementById("includeUpperCase")
 const includeNumbersEl = document.getElementById("includeNumbers")
 const includeSymbolsEl = document.getElementById("includeSymbols")
+const passwordDisplay = document.getElementById("passwordDisplay")
+
+const UPPERCASE_CHAR_CODES = arrayFromLowToHigh(65, 90)
+const LOWERCASE_CHAR_CODES = arrayFromLowToHigh(97, 122)
+const NUMBER_CHAR_CODES = arrayFromLowToHigh(48, 57)
+const SYMBOL_CHAR_CODES = arrayFromLowToHigh(33, 47).concat(arrayFromLowToHigh(58, 64)).concat(arrayFromLowToHigh(123, 126))
 
 charAmountNumber.addEventListener("input", syncCharAmount)
 charAmountRange.addEventListener("input", syncCharAmount)
 
 form.addEventListener('submit', e => {
     e.preventDefault() /*Will stop out form from submitting and refreshing our page*/
+    const charAmount = charAmountNumber.value
     const includeUpperCase = includeUpperCaseEl.checked
     const includeNumbers = includeNumbersEl.checked
     const includeSymbols = includeSymbolsEl.checked
-    const password = generatePaswword(charAmount, includeUpperCase, includeNumbers, includeSymbols)
+    const password = generatePassword(charAmount, includeUpperCase, includeNumbers, includeSymbols)
+
+    console.log(passwordDisplay, password);
+    
+    if (passwordDisplay) {
+        passwordDisplay.innerText = password;  // Ensure password is defined
+    } else {
+        console.log('Element with ID "passwordDisplay" not found.');
+    }
 })
+
+function generatePassword(charAmount, includeUpperCase, includeNumbers, includeSymbols) {
+    let charCodes = LOWERCASE_CHAR_CODES
+    if (includeUpperCase) charCodes = charCodes.concat(UPPERCASE_CHAR_CODES)
+    if (includeSymbols) charCodes = charCodes.concat(SYMBOL_CHAR_CODES)
+    if (includeNumbers) charCodes = charCodes.concat(NUMBER_CHAR_CODES)
+    
+
+    const passwordCharacters = []
+    for (let i = 0; i < charAmount; i++) {
+        const characterCode = charCodes[Math.floor(Math.random() * charCodes.length)]
+        passwordCharacters.push(String.fromCharCode(characterCode))
+    }
+    return passwordCharacters.join('')
+}
+
+function arrayFromLowToHigh(low, high) {
+    const array = []
+    for (let i = low; i <= high; i++) {
+        array.push(i)
+    }
+    return array
+}
 
 function syncCharAmount(e) {
     const value = e.target.value
